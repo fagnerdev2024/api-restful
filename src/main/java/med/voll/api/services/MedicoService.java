@@ -27,10 +27,13 @@ public class MedicoService {
 
     @Transactional
     public DadosDetalhamentoMedico cadastrar(DadosCadastroMedico dados) {
+        log.info("Iniciando o método cadastrar para o médico: {}", dados.nome());
         Medico medico = new Medico(dados);
         try {
             medicoRepository.save(medico);
+            log.info("Médico salvo com sucesso: {}", medico.getId());
         } catch (Exception e) {
+            log.error("Erro ao salvar o médico no banco de dados!", e);
             throw new DatabaseException("Erro ao salvar o médico no banco de dados!", e);
         }
         return new DadosDetalhamentoMedico(medico);
