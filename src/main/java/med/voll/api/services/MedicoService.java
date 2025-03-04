@@ -9,6 +9,7 @@ import med.voll.api.entities.Medico;
 import med.voll.api.infra.exceptions.DatabaseException;
 import med.voll.api.infra.exceptions.ResourceNotFoundException;
 import med.voll.api.repositories.MedicoRepository;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,18 @@ public class MedicoService {
 
     @Transactional(readOnly = true)
     public Page<DadosListagemMedico> listar(Pageable paginacao) {
-        return medicoRepository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
+        if (paginacao.getPageSize() > 100) {
+            throw new IllegalArgumentException("O tamanho da página não pode exceder 100 registros.");
+        }
+        log.info("Listando médicos ativos com paginação: {}", paginacao);
+        try {
+            return medicoRepository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
+        } catch (Exception e) {
+            log.error("Erro ao listar médicos ativos.", e);
+            throw new ServiceException("Falha ao buscar médicos ativos.", e);
+        }
     }
+
 
 
     @Transactional

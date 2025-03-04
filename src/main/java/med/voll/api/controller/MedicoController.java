@@ -7,6 +7,8 @@ import med.voll.api.dtos.DadosCadastroMedico;
 import med.voll.api.dtos.DadosDetalhamentoMedico;
 import med.voll.api.dtos.DadosListagemMedico;
 import med.voll.api.services.MedicoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/medicos")
 @SecurityRequirement(name = "bearer-key")
 public class MedicoController {
+
+    private static final Logger log = LoggerFactory.getLogger(MedicoService.class);
 
 
     @Autowired
@@ -34,15 +38,21 @@ public class MedicoController {
 
 
     @GetMapping
-    public ResponseEntity<Page<DadosListagemMedico>> listarMedicos(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
+    public ResponseEntity<Page<DadosListagemMedico>> listarMedicos(
+            @PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
+        log.info("Recebida solicitação para listar médicos com paginação: {}", paginacao);
+
         Page<DadosListagemMedico> page = medicoService.listar(paginacao);
 
         if (page.isEmpty()) {
-            return ResponseEntity.noContent().build(); // Retorna 204 se não houver médicos ativos
+            return ResponseEntity.noContent()
+                    .header("X-Info", "Nenhum médico ativo encontrado.")
+                    .build(); // Retorna 204 se não houver médicos ativos
         }
 
         return ResponseEntity.ok(page);
     }
+
 
     @PutMapping
     public ResponseEntity<DadosDetalhamentoMedico> atualizarMedicos(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
