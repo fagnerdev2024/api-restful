@@ -2,10 +2,7 @@ package med.voll.api.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import med.voll.api.dtos.DadosAtualizacaoPaciente;
-import med.voll.api.dtos.DadosCadastroPaciente;
-import med.voll.api.dtos.DadosDetalhamentoPaciente;
-import med.voll.api.dtos.DadosListagemPaciente;
+import med.voll.api.dtos.*;
 import med.voll.api.repositories.PacienteRepository;
 import med.voll.api.services.PacienteService;
 import org.slf4j.Logger;

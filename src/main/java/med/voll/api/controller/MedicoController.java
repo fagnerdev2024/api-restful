@@ -30,7 +30,10 @@ public class MedicoController {
 
 
     @PostMapping
-    public ResponseEntity<DadosDetalhamentoMedico> cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoMedico> cadastrarMedico(
+            @RequestBody @Valid DadosCadastroMedico dados, UriComponentsBuilder uriBuilder) {
+        log.info("Recebida solicitação para cadastrar médico: {}", dados.nome());
+
         DadosDetalhamentoMedico detalhes = medicoService.cadastrar(dados);
         var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(detalhes.id()).toUri();
         return ResponseEntity.created(uri).body(detalhes);
@@ -55,21 +58,28 @@ public class MedicoController {
 
 
     @PutMapping
-    public ResponseEntity<DadosDetalhamentoMedico> atualizarMedicos(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
+    public ResponseEntity<DadosDetalhamentoMedico> atualizarMedico(
+            @RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
+        log.info("Recebida solicitação para atualizar médico com ID: {}", dadosAtualizacaoMedico.id());
+
         DadosDetalhamentoMedico detalhesAtualizados = medicoService.atualizar(dadosAtualizacaoMedico);
         return ResponseEntity.ok(detalhesAtualizados);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirMedicos(@PathVariable Long id) {
+    public ResponseEntity<Void> excluirMedico(@PathVariable Long id) {
+        log.info("Recebida solicitação para excluir médico com ID: {}", id);
+
         medicoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<DadosDetalhamentoMedico> detalharMedicos(@PathVariable Long id) {
+    public ResponseEntity<DadosDetalhamentoMedico> detalharMedico(@PathVariable Long id) {
+        log.info("Recebida solicitação para detalhar médico com ID: {}", id);
+
         DadosDetalhamentoMedico detalhesMedico = medicoService.detalhar(id);
         return ResponseEntity.ok(detalhesMedico); // A Controller é responsável por formatar a resposta HTTP.
     }
