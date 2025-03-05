@@ -62,23 +62,4 @@ public class PacienteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente com ID " + id + " não encontrado!"));
         return new DadosDetalhamentoPaciente(paciente);
     }
-
-
-
-
-
-
-
-    @Transactional
-    public Paciente salvarPaciente(DadosCadastroPaciente dados) {
-        validarEmailUnico(dados.email()); // Acessa o email com o método do record
-        Paciente paciente = new Paciente(dados);
-        return pacienteRepository.save(paciente);
-    }
-
-    private void validarEmailUnico(String email) {
-        if (pacienteRepository.existsByEmail(email)) { // Verifica no banco se o email já existe
-            throw new IllegalArgumentException("Erro: o email '" + email + "' já está cadastrado!");
-        }
-    }
 }
