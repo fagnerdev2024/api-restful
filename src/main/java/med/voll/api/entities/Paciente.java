@@ -22,6 +22,7 @@ public class Paciente {
     private Long id;
 
     private String nome;
+    @Getter
     private String email;
     private String cpf;
     private String telefone;
@@ -53,10 +54,6 @@ public class Paciente {
 
     public void excluir() {
         this.ativo = false;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public boolean isAtivo() {

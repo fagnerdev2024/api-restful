@@ -51,8 +51,7 @@ public class MedicoService {
         }
         log.debug("Listando médicos ativos com paginação: {}", paginacao);
         try {
-            return medicoRepository.findAllByAtivoTrue(paginacao)
-                    .map(DadosListagemMedico::new);
+            return medicoRepository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
         } catch (DataAccessException e) {
             log.error("Erro de acesso ao banco de dados.", e);
             throw new ServiceException("Falha ao acessar o banco de dados.", e);
@@ -61,7 +60,6 @@ public class MedicoService {
             throw new ServiceException("Falha ao buscar médicos ativos.", e);
         }
     }
-
 
 
     @Transactional
@@ -95,20 +93,19 @@ public class MedicoService {
         var medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Médico com ID " + id + " não encontrado!"));
 
-        if (!medico.isAtivo()) { // Verifica se já está inativo
+        if (!medico.isAtivo()) {
             throw new IllegalStateException("Médico com ID " + id + " já está inativo!");
         }
 
         try {
             medico.excluir();
-            medicoRepository.save(medico); // Atualiza o estado do médico no banco de dados
+            medicoRepository.save(medico);
             log.info("Médico com ID {} foi excluído logicamente.", id);
         } catch (Exception e) {
             log.error("Erro ao excluir o médico com ID {} no banco de dados!", id, e);
             throw new DatabaseException("Erro ao excluir o médico no banco de dados!", e);
         }
     }
-
 
 
     @Transactional(readOnly = true)
@@ -119,7 +116,7 @@ public class MedicoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Médico com ID " + id + " não encontrado!"));
 
         try {
-            return new DadosDetalhamentoMedico(medico); // A Service retorna apenas o DTO.
+            return new DadosDetalhamentoMedico(medico);
         } catch (Exception e) {
             log.error("Erro ao detalhar o médico com ID {} no banco de dados!", id, e);
             throw new ServiceException("Erro ao detalhar o médico no banco de dados!", e);
