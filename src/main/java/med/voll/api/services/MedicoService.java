@@ -30,15 +30,15 @@ public class MedicoService {
     private MedicoRepository medicoRepository;
 
     @Transactional
-    public DadosDetalhamentoMedico cadastrar(DadosCadastroMedico dados) {
-        log.info("Iniciando o método cadastrar para o médico: {}", dados.nome());
-        Medico medico = new Medico(dados);
+    public DadosDetalhamentoMedico cadastrar(DadosCadastroMedico dadosCadastroMedico) {
+        log.info("Iniciando o método cadastrar para o médico: {}", dadosCadastroMedico.nome());
+        Medico medico = new Medico(dadosCadastroMedico);
         try {
             medicoRepository.save(medico);
             log.info("Médico salvo com sucesso: {}", medico.getId());
         } catch (Exception e) {
-            log.error("Erro ao salvar o médico no banco de dados!", e);
-            throw new DatabaseException("Erro ao salvar o médico no banco de dados!", e);
+            log.error("Erro ao salvar o médico no banco de dadosCadastroMedico!", e);
+            throw new DatabaseException("Erro ao salvar o médico no banco de dadosCadastroMedico!", e);
         }
         return new DadosDetalhamentoMedico(medico);
     }
@@ -122,7 +122,4 @@ public class MedicoService {
             throw new ServiceException("Erro ao detalhar o médico no banco de dados!", e);
         }
     }
-
-
-
 }
