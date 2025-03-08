@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.*;
 public class ConsultaController {
 
     @Autowired
-    private AgendaDeConsultas agenda;
+    private AgendaDeConsultas agendaDeConsultas;
 
     @PostMapping
     @Transactional
-    public ResponseEntity agendar(@RequestBody @Valid DadosAgendamentoConsulta dados) {
-        var dto = agenda.agendar(dados);
+    public ResponseEntity agendar(@RequestBody @Valid DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var dto = agendaDeConsultas.agendar(dadosAgendamentoConsulta);
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping
     @Transactional
-    public ResponseEntity cancelar(@RequestBody @Valid DadosCancelamentoConsulta dados) {
-        agenda.cancelar(dados);
+    public ResponseEntity cancelar(@RequestBody @Valid DadosCancelamentoConsulta dadosCancelamentoConsulta) {
+        agendaDeConsultas.cancelar(dadosCancelamentoConsulta);
         return ResponseEntity.noContent().build();
     }
 
