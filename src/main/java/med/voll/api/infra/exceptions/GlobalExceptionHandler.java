@@ -12,31 +12,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity<ErroResposta> handleDatabaseException(DatabaseException ex) {
-        ErroResposta erro = new ErroResposta(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ex.getMessage(),
-                Instant.now().toEpochMilli() // Timestamp atual em milissegundos
-        );
+        ErroResposta erro = new ErroResposta(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), Instant.now().toEpochMilli());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErroResposta> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        ErroResposta erro = new ErroResposta(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                Instant.now().toEpochMilli()
-        );
+        ErroResposta erro = new ErroResposta(HttpStatus.NOT_FOUND.value(), ex.getMessage(), Instant.now().toEpochMilli());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErroResposta> handleIllegalStateException(IllegalStateException ex) {
-        ErroResposta erro = new ErroResposta(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                Instant.now().toEpochMilli()
-        );
+        ErroResposta erro = new ErroResposta(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), Instant.now().toEpochMilli());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 }
