@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 public class ValidadorPacienteSemOutraConsultaNoDia implements ValidadorAgendamentoDeConsulta {
 
     @Autowired
-    private ConsultaRepository repository;
+    private ConsultaRepository consultaRepository;
 
-    public void validar(DadosAgendamentoConsulta dados) {
-        var primeiroHorario = dados.data().withHour(7);
-        var ultimoHorario = dados.data().withHour(18);
-        var pacientePossuiOutraConsultaNoDia = repository.existsByPacienteIdAndDataBetween(dados.idPaciente(), primeiroHorario, ultimoHorario);
+    public void validar(DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var primeiroHorario = dadosAgendamentoConsulta.data().withHour(7);
+        var ultimoHorario = dadosAgendamentoConsulta.data().withHour(18);
+        var pacientePossuiOutraConsultaNoDia = consultaRepository.existsByPacienteIdAndDataBetween(dadosAgendamentoConsulta.idPaciente(), primeiroHorario, ultimoHorario);
         if (pacientePossuiOutraConsultaNoDia) {
             throw new ValidacaoException("Paciente já possui uma consulta agendada nesse dia");
         }

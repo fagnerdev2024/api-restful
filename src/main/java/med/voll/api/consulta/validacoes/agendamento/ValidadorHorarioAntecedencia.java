@@ -12,8 +12,8 @@ public class ValidadorHorarioAntecedencia implements ValidadorAgendamentoDeConsu
 
     private static final int MIN_ANTECEDENCIA_MINUTOS = 30;
 
-    public void validar(DadosAgendamentoConsulta dados) {
-        var dataConsulta = dados.data();
+    public void validar(DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var dataConsulta = dadosAgendamentoConsulta.data();
         var agora = LocalDateTime.now();
         var diferencaEmMinutos = Duration.between(agora, dataConsulta).toMinutes();
 

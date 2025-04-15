@@ -4,6 +4,6 @@ import med.voll.api.dtos.DadosAgendamentoConsulta;
 
 public interface ValidadorAgendamentoDeConsulta {
 
-    void validar(DadosAgendamentoConsulta dados);
+    void validar(DadosAgendamentoConsulta dadosAgendamentoConsulta);
 
 }
