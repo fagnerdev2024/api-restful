@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 public class ValidadorHorarioAntecedencia implements ValidadorCancelamentoDeConsulta {
 
     @Autowired
-    private ConsultaRepository repository;
+    private ConsultaRepository consultaRepository;
 
     @Override
-    public void validar(DadosCancelamentoConsulta dados) {
-        var consulta = repository.getReferenceById(dados.idConsulta());
+    public void validar(DadosCancelamentoConsulta dadosCancelamentoConsulta) {
+        var consulta = consultaRepository.getReferenceById(dadosCancelamentoConsulta.idConsulta());
         var agora = LocalDateTime.now();
         var diferencaEmHoras = Duration.between(agora, consulta.getData()).toHours();
 
