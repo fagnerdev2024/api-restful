@@ -1,4 +1,4 @@
-package med.voll.api.domain.consulta;
+package med.voll.api.consulta.validacoes;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
