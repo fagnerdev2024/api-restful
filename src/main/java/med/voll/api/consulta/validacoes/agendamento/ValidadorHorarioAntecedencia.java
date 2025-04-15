@@ -20,6 +20,5 @@ public class ValidadorHorarioAntecedencia implements ValidadorAgendamentoDeConsu
         if (diferencaEmMinutos < MIN_ANTECEDENCIA_MINUTOS) {
             throw new ValidacaoException("Consulta para " + dataConsulta + "deve ser agendada com antecedencia minima de " + MIN_ANTECEDENCIA_MINUTOS + "minutos");
         }
-
     }
 }
