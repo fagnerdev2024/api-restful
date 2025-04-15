@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.domain.endereco.Endereco;
-import med.voll.api.domain.enums.Especialidade;
+import med.voll.api.enums.Especialidade;
 import med.voll.api.dtos.DadosAtualizacaoMedico;
 import med.voll.api.dtos.DadosCadastroMedico;
 

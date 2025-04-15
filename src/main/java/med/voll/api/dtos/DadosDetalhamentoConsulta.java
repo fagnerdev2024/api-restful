@@ -1,6 +1,6 @@
 package med.voll.api.dtos;
 
-import med.voll.api.consulta.validacoes.Consulta;
+import med.voll.api.entities.Consulta;
 
 import java.time.LocalDateTime;
 

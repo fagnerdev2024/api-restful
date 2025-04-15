@@ -1,6 +1,6 @@
 package med.voll.api.dtos;
 
-import med.voll.api.domain.enums.Especialidade;
+import med.voll.api.enums.Especialidade;
 import med.voll.api.entities.Medico;
 
 public record DadosListagemMedico(

@@ -1,6 +1,6 @@
 package med.voll.api.repositories;
 
-import med.voll.api.domain.enums.Especialidade;
+import med.voll.api.enums.Especialidade;
 import med.voll.api.entities.Medico;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

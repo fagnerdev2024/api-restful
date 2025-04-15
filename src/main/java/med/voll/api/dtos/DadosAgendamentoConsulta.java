@@ -2,7 +2,7 @@ package med.voll.api.dtos;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import med.voll.api.domain.enums.Especialidade;
+import med.voll.api.enums.Especialidade;
 
 import java.time.LocalDateTime;
 

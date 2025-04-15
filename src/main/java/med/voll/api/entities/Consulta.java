@@ -1,12 +1,11 @@
-package med.voll.api.consulta.validacoes;
+package med.voll.api.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.entities.Medico;
-import med.voll.api.entities.Paciente;
+import med.voll.api.enums.MotivoCancelamento;
 
 import java.time.LocalDateTime;
 

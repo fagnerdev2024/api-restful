@@ -1,4 +1,4 @@
-package med.voll.api.domain.usuario;
+package med.voll.api.services;
 
 import med.voll.api.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

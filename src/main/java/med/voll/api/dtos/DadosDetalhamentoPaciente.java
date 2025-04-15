@@ -1,6 +1,6 @@
 package med.voll.api.dtos;
 
-import med.voll.api.domain.endereco.Endereco;
+import med.voll.api.entities.Endereco;
 import med.voll.api.entities.Paciente;
 
 public record DadosDetalhamentoPaciente(
