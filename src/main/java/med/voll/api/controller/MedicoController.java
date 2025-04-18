@@ -13,16 +13,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/medicos")
 @SecurityRequirement(name = "bearer-key")
 public class MedicoController {
 
-    private static final Logger log = LoggerFactory.getLogger(MedicoService.class);
+    private static final Logger log = LoggerFactory.getLogger(MedicoController.class);
 
 
     @Autowired
@@ -30,23 +34,23 @@ public class MedicoController {
 
 
     @PostMapping
-    public ResponseEntity<DadosDetalhamentoMedico> cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dados, UriComponentsBuilder uriBuilder) {
-        log.info("Recebida solicitação para cadastrar médico: {}", dados.nome());
-        DadosDetalhamentoMedico detalhes = medicoService.cadastrar(dados);
-        var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(detalhes.id()).toUri();
-        return ResponseEntity.created(uri).body(detalhes);
+    public ResponseEntity<DadosDetalhamentoMedico> cadastrarMedico(@RequestBody @Valid DadosCadastroMedico dadosCadastroMedico, UriComponentsBuilder uriComponentsBuilder) {
+        log.info("Recebida solicitação para cadastrar médico: {}", dadosCadastroMedico.nome());
+        DadosDetalhamentoMedico dadosDetalhamentoMedico = medicoService.cadastrar(dadosCadastroMedico);
+        var uri = uriComponentsBuilder.path("/medicos/{id}").buildAndExpand(dadosDetalhamentoMedico.id()).toUri();
+        return ResponseEntity.created(uri).body(dadosDetalhamentoMedico);
     }
 
 
     @GetMapping
-    public ResponseEntity<Page<DadosListagemMedico>> listarMedicos(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
+    public ResponseEntity<?> listarMedicos(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
         log.info("Recebida solicitação para listar médicos com paginação: {}", paginacao);
         Page<DadosListagemMedico> page = medicoService.listar(paginacao);
 
         if (page.isEmpty()) {
-            return ResponseEntity.noContent()
-                    .header("X-Info", "Nenhum médico ativo encontrado.")
-                    .build(); // Retorna 204 se não houver médicos ativos
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Nenhum médico ativo encontrado");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.ok(page);
     }
@@ -55,8 +59,8 @@ public class MedicoController {
     @PutMapping
     public ResponseEntity<DadosDetalhamentoMedico> atualizarMedico(@RequestBody @Valid DadosAtualizacaoMedico dadosAtualizacaoMedico) {
         log.info("Recebida solicitação para atualizar médico com ID: {}", dadosAtualizacaoMedico.id());
-        DadosDetalhamentoMedico detalhesAtualizados = medicoService.atualizar(dadosAtualizacaoMedico);
-        return ResponseEntity.ok(detalhesAtualizados);
+        DadosDetalhamentoMedico dadosDetalhamentoMedico = medicoService.atualizar(dadosAtualizacaoMedico);
+        return ResponseEntity.ok(dadosDetalhamentoMedico);
     }
 
 
@@ -71,8 +75,7 @@ public class MedicoController {
     @GetMapping("/{id}")
     public ResponseEntity<DadosDetalhamentoMedico> detalharMedico(@PathVariable Long id) {
         log.info("Recebida solicitação para detalhar médico com ID: {}", id);
-        DadosDetalhamentoMedico detalhesMedico = medicoService.detalhar(id);
-        return ResponseEntity.ok(detalhesMedico); // A Controller é responsável por formatar a resposta HTTP.
+        DadosDetalhamentoMedico dadosDetalhamentoMedico = medicoService.detalhar(id);
+        return ResponseEntity.ok(dadosDetalhamentoMedico);
     }
-
 }

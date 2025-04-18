@@ -2,6 +2,7 @@ package med.voll.api.controller;
 
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +16,10 @@ import java.util.Map;
 public class HelloController {
 
     @GetMapping
-    public Map<String, String> olaMundo() {
+    public ResponseEntity<Map<String, String>> olaMundo() {
         Map<String, String> map = new HashMap<>();
         map.put("message", "sucess");
 
-        return map;
+        return ResponseEntity.ok(map);
     }
 }
