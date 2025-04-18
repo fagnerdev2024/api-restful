@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PacienteService {
 
     @Autowired
-    private final PacienteRepository pacienteRepository;
+    private PacienteRepository pacienteRepository;
 
     private static final Logger log = LoggerFactory.getLogger(PacienteService.class);
 
@@ -30,9 +30,7 @@ public class PacienteService {
 
 
 
-    public PacienteService(PacienteRepository pacienteRepository) {
-        this.pacienteRepository = pacienteRepository;
-    }
+
 
 
 
@@ -93,17 +91,15 @@ public class PacienteService {
     @Transactional
     public void excluir(Long id) {
         log.info("Iniciando exclusão para o paciente com ID: {}", id);
-
         var paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente com ID " + id + " não encontrado!"));
-
-        if (!paciente.isAtivo()) { // Verifica se já está inativo
+        if (!paciente.isAtivo()) {
             throw new IllegalStateException("Paciente com ID " + id + " já está inativo!");
         }
 
         try {
             paciente.excluir();
-            pacienteRepository.save(paciente); // Atualiza o estado do paciente no banco de dados
+            pacienteRepository.save(paciente);
             log.info("Paciente com ID {} foi excluído logicamente.", id);
         } catch (Exception e) {
             log.error("Erro ao excluir o paciente com ID {} no banco de dados!", id, e);
@@ -115,12 +111,14 @@ public class PacienteService {
     @Transactional(readOnly = true)
     public DadosDetalhamentoPaciente detalhar(Long id) {
         log.info("Iniciando detalhamento para o paciente com ID: {}", id);
-
         var paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente com ID " + id + " não encontrado!"));
-
+        if (!paciente.isAtivo()) {
+            log.info("Paciente com ID {} está inativo.", id);
+            throw new IllegalStateException("Paciente com ID " + id + " está inativo!");
+        }
         try {
-            return new DadosDetalhamentoPaciente(paciente); // A Service retorna apenas o DTO.
+            return new DadosDetalhamentoPaciente(paciente);
         } catch (Exception e) {
             log.error("Erro ao detalhar o paciente com ID {} no banco de dados!", id, e);
             throw new ServiceException("Erro ao detalhar o paciente no banco de dados!", e);
