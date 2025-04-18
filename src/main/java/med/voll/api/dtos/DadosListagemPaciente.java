@@ -5,8 +5,11 @@ import med.voll.api.entities.Paciente;
 public record DadosListagemPaciente(
 
         Long id,
+
         String nome,
+
         String email,
+
         String cpf) {
 
     public DadosListagemPaciente(Paciente paciente) {
