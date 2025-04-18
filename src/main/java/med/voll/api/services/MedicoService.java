@@ -29,6 +29,8 @@ public class MedicoService {
     @Autowired
     private MedicoRepository medicoRepository;
 
+
+
     @Transactional
     public DadosDetalhamentoMedico cadastrar(DadosCadastroMedico dadosCadastroMedico) {
         log.info("Iniciando o método cadastrar para o médico: {}", dadosCadastroMedico.nome());
@@ -51,7 +53,11 @@ public class MedicoService {
         }
         log.debug("Listando médicos ativos com paginação: {}", paginacao);
         try {
-            return medicoRepository.findAllByAtivoTrue(paginacao).map(DadosListagemMedico::new);
+            Page<Medico> medicos = medicoRepository.findAllByAtivoTrue(paginacao);
+            if(medicos.isEmpty()){
+                return Page.empty();
+            }
+            return medicos.map(DadosListagemMedico::new);
         } catch (DataAccessException e) {
             log.error("Erro de acesso ao banco de dados.", e);
             throw new ServiceException("Falha ao acessar o banco de dados.", e);
@@ -65,7 +71,6 @@ public class MedicoService {
     @Transactional
     public DadosDetalhamentoMedico atualizar(DadosAtualizacaoMedico dadosAtualizacaoMedico) {
         log.info("Iniciando atualização para o médico com ID: {}", dadosAtualizacaoMedico.id());
-
         var medico = medicoRepository.findById(dadosAtualizacaoMedico.id())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Erro ao atualizar: Médico com ID " + dadosAtualizacaoMedico.id() + " não encontrado na base de dados."
@@ -114,7 +119,11 @@ public class MedicoService {
 
         var medico = medicoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Médico com ID " + id + " não encontrado!"));
+        if(!medico.isAtivo()){
+            log.info("Médico com ID {} está inativo", id);
+            throw new ResourceNotFoundException("Médico com ID " + id + " está inativo.");
 
+        }
         try {
             return new DadosDetalhamentoMedico(medico);
         } catch (Exception e) {
