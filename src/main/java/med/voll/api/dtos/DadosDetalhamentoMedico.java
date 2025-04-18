@@ -24,42 +24,4 @@ public record DadosDetalhamentoMedico(
             medico.getEndereco());
 
     }
-
-
-
-
-    @Override
-    public Long id() {
-        return id;
-    }
-
-    @Override
-    public String nome() {
-        return nome;
-    }
-
-    @Override
-    public String email() {
-        return email;
-    }
-
-    @Override
-    public String crm() {
-        return crm;
-    }
-
-    @Override
-    public String telefone() {
-        return telefone;
-    }
-
-    @Override
-    public Especialidade especialidade() {
-        return especialidade;
-    }
-
-    @Override
-    public Endereco endereco() {
-        return endereco;
-    }
 }
