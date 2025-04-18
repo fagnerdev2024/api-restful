@@ -45,14 +45,14 @@ public class MedicoController {
     @GetMapping
     public ResponseEntity<?> listarMedicos(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
         log.info("Recebida solicitação para listar médicos com paginação: {}", paginacao);
-        Page<DadosListagemMedico> page = medicoService.listar(paginacao);
+        Page<DadosListagemMedico> dadosListagemMedicos = medicoService.listar(paginacao);
 
-        if (page.isEmpty()) {
+        if (dadosListagemMedicos.isEmpty()) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Nenhum médico ativo encontrado");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(dadosListagemMedicos);
     }
 
 

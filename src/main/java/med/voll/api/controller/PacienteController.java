@@ -11,68 +11,58 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pacientes")
 @SecurityRequirement(name = "bearer-key")
 public class PacienteController {
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
+    private static final Logger log = LoggerFactory.getLogger(PacienteController.class);
 
     @Autowired
-    private final PacienteService pacienteService;
+    private PacienteService pacienteService;
 
-    private static final Logger log = LoggerFactory.getLogger(PacienteService.class);
 
-    public PacienteController(PacienteService pacienteService) {
-        this.pacienteService = pacienteService;
-    }
 
     @PostMapping
-    public ResponseEntity<DadosDetalhamentoPaciente> cadastrarPaciente(
-            @RequestBody @Valid DadosCadastroPaciente dados, UriComponentsBuilder uriBuilder) {
-        log.info("Recebida solicitação para cadastrar paciente: {}", dados.nome());
-
-        DadosDetalhamentoPaciente detalhes = pacienteService.cadastrar(dados);
-        var uri = uriBuilder.path("/pacientes/{id}").buildAndExpand(detalhes.id()).toUri();
-        return ResponseEntity.created(uri).body(detalhes);
+    public ResponseEntity<DadosDetalhamentoPaciente> cadastrarPaciente(@RequestBody @Valid DadosCadastroPaciente dadosCadastroPaciente, UriComponentsBuilder uriComponentsBuilder) {
+        log.info("Recebida solicitação para cadastrar paciente: {}", dadosCadastroPaciente.nome());
+        DadosDetalhamentoPaciente dadosDetalhamentoPaciente = pacienteService.cadastrar(dadosCadastroPaciente);
+        var uri = uriComponentsBuilder.path("/pacientes/{id}").buildAndExpand(dadosDetalhamentoPaciente.id()).toUri();
+        return ResponseEntity.created(uri).body(dadosDetalhamentoPaciente);
     }
 
     @GetMapping
-    public ResponseEntity<Page<DadosListagemPaciente>> listarPaciente(
-            @PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
+    public ResponseEntity<?> listarPaciente(@PageableDefault(page = 0, size = 10, sort = {"nome"}) Pageable paginacao) {
         log.info("Recebida solicitação para listar pacientes com paginação: {}", paginacao);
+        Page<DadosListagemPaciente> dadosListagemPacientes = pacienteService.listar(paginacao);
 
-        Page<DadosListagemPaciente> page = pacienteService.listar(paginacao);
-
-        if (page.isEmpty()) {
-            return ResponseEntity.noContent()
-                    .header("X-Info", "Nenhum paciente ativo encontrado.")
-                    .build(); // Retorna 204 se não houver pacientes ativos
+        if (dadosListagemPacientes.isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Nenhum paciente ativo encontrado");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
-
-        return ResponseEntity.ok(page);
+        return ResponseEntity.ok(dadosListagemPacientes);
     }
 
-
     @PutMapping
-    public ResponseEntity<DadosDetalhamentoPaciente> atualizarPaciente(
-            @RequestBody @Valid DadosAtualizacaoPaciente dadosAtualizacaoPaciente) {
+    public ResponseEntity<DadosDetalhamentoPaciente> atualizarPaciente(@RequestBody @Valid DadosAtualizacaoPaciente dadosAtualizacaoPaciente) {
         log.info("Recebida solicitação para atualizar paciente com ID: {}", dadosAtualizacaoPaciente.id());
-
-        DadosDetalhamentoPaciente detalhesAtualizados = pacienteService.atualizar(dadosAtualizacaoPaciente);
-        return ResponseEntity.ok(detalhesAtualizados);
+        DadosDetalhamentoPaciente dadosDetalhamentoPaciente = pacienteService.atualizar(dadosAtualizacaoPaciente);
+        return ResponseEntity.ok(dadosDetalhamentoPaciente);
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirPaciente(@PathVariable Long id) {
         log.info("Recebida solicitação para excluir paciente com ID: {}", id);
-
         pacienteService.excluir(id);
         return ResponseEntity.noContent().build();
     }
@@ -81,9 +71,7 @@ public class PacienteController {
     @GetMapping("/{id}")
     public ResponseEntity<DadosDetalhamentoPaciente> detalharPaciente(@PathVariable Long id) {
         log.info("Recebida solicitação para detalhar paciente com ID: {}", id);
-
-        DadosDetalhamentoPaciente detalhesPaciente = pacienteService.detalhar(id);
-        return ResponseEntity.ok(detalhesPaciente); // A Controller é responsável por formatar a resposta HTTP.
+        DadosDetalhamentoPaciente dadosDetalhamentoPaciente = pacienteService.detalhar(id);
+        return ResponseEntity.ok(dadosDetalhamentoPaciente);
     }
-
 }
