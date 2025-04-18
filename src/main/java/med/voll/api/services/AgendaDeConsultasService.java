@@ -1,5 +1,6 @@
-package med.voll.api.consulta.validacoes.agendamento;
+package med.voll.api.services;
 
+import med.voll.api.consulta.validacoes.agendamento.ValidadorAgendamentoDeConsulta;
 import med.voll.api.entities.Consulta;
 import med.voll.api.infra.exceptions.ValidacaoException;
 import med.voll.api.consulta.validacoes.cancelamento.ValidadorCancelamentoDeConsulta;
