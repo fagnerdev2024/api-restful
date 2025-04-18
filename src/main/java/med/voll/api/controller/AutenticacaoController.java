@@ -5,7 +5,6 @@ import med.voll.api.dtos.DadosAutenticacao;
 import med.voll.api.entities.Usuario;
 import med.voll.api.infra.security.DadosTokenJWT;
 import med.voll.api.infra.security.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,22 +17,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/login")
 public class AutenticacaoController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
 
-    @Autowired
-    private TokenService tokenService;
 
+    public AutenticacaoController(AuthenticationManager authenticationManager, TokenService tokenService) {
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+    }
 
     @PostMapping
-    public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAutenticacao dadosAutenticacao) {
+    public ResponseEntity<?> efetuarLogin(@RequestBody @Valid DadosAutenticacao dadosAutenticacao) {
         try {
-            var authenticationToken = new UsernamePasswordAuthenticationToken(dadosAutenticacao.login(), dadosAutenticacao.senha());
+            var authenticationToken = new UsernamePasswordAuthenticationToken(
+                    dadosAutenticacao.login(), dadosAutenticacao.senha()
+            );
             var authentication = authenticationManager.authenticate(authenticationToken);
-            var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+            var usuario = (Usuario) authentication.getPrincipal();
+            var tokenJWT = tokenService.gerarToken(usuario);
+
             return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
