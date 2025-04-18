@@ -11,8 +11,10 @@ import med.voll.api.dtos.DadosAgendamentoConsulta;
 import med.voll.api.dtos.DadosCancelamentoConsulta;
 import med.voll.api.dtos.DadosDetalhamentoConsulta;
 import med.voll.api.repositories.ConsultaRepository;
+import med.voll.api.repositories.RepositoryFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,13 +22,7 @@ import java.util.List;
 public class AgendaDeConsultasService {
 
     @Autowired
-    private ConsultaRepository consultaRepository;
-
-    @Autowired
-    private MedicoRepository medicoRepository;
-
-    @Autowired
-    private PacienteRepository pacienteRepository;
+    private RepositoryFacade repositoryFacade;
 
     @Autowired
     private List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas;
@@ -34,51 +30,64 @@ public class AgendaDeConsultasService {
     @Autowired
     private List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas;
 
-    public DadosDetalhamentoConsulta agendar(DadosAgendamentoConsulta dados) {
-        if (!pacienteRepository.existsById(dados.idPaciente())) {
+
+    public AgendaDeConsultasService(List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas, List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas) {
+        this.validadorAgendamentoDeConsultas = validadorAgendamentoDeConsultas;
+        this.validadorCancelamentoDeConsultas = validadorCancelamentoDeConsultas;
+    }
+
+
+
+
+    @Transactional
+    public DadosDetalhamentoConsulta agendar(DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        if (!repositoryFacade.getPacienteRepository().existsById(dadosAgendamentoConsulta.idPaciente())) {
             throw new ValidacaoException("Id do paciente informado não existe!");
         }
 
-        if (dados.idMedico() != null && !medicoRepository.existsById(dados.idMedico())) {
+        if (dadosAgendamentoConsulta.idMedico() != null && !repositoryFacade.getMedicoRepository().existsById(dadosAgendamentoConsulta.idMedico())) {
             throw new ValidacaoException("Id do médico informado não existe!");
         }
 
-        validadorAgendamentoDeConsultas.forEach(v -> v.validar(dados));
+        validadorAgendamentoDeConsultas.forEach(v -> v.validar(dadosAgendamentoConsulta));
 
-        var paciente = pacienteRepository.getReferenceById(dados.idPaciente());
-        var medico = escolherMedico(dados);
+        var paciente = repositoryFacade.getPacienteRepository().getReferenceById(dadosAgendamentoConsulta.idPaciente());
+        var medico = escolherMedico(dadosAgendamentoConsulta);
         if (medico == null) {
             throw new ValidacaoException("Não existe médico disponível nessa data!");
         }
 
-        var consulta = new Consulta(null, medico, paciente, dados.data(), null);
-        consultaRepository.save(consulta);
+        var consulta = new Consulta(null, medico, paciente, dadosAgendamentoConsulta.data(), null);
+        repositoryFacade.getConsultaRepository().save(consulta);
 
         return new DadosDetalhamentoConsulta(consulta);
     }
 
-    public void cancelar(DadosCancelamentoConsulta dados) {
-        if (!consultaRepository.existsById(dados.idConsulta())) {
+
+    @Transactional
+    public void cancelar(DadosCancelamentoConsulta dadosCancelamentoConsulta) {
+        if (!repositoryFacade.getConsultaRepository().existsById(dadosCancelamentoConsulta.idConsulta())) {
             throw new ValidacaoException("Id da consulta informado não existe!");
         }
 
-        validadorCancelamentoDeConsultas.forEach(v -> v.validar(dados));
+        validadorCancelamentoDeConsultas.forEach(v -> v.validar(dadosCancelamentoConsulta));
 
-        var consulta = consultaRepository.getReferenceById(dados.idConsulta());
-        consulta.cancelar(dados.motivo());
+        var consulta = repositoryFacade.getConsultaRepository().getReferenceById(dadosCancelamentoConsulta.idConsulta());
+        consulta.cancelar(dadosCancelamentoConsulta.motivo());
     }
 
 
-    private Medico escolherMedico(DadosAgendamentoConsulta dados) {
-        if (dados.idMedico() != null) {
-            return medicoRepository.getReferenceById(dados.idMedico());
+    @Transactional
+    private Medico escolherMedico(DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        if (dadosAgendamentoConsulta.idMedico() != null) {
+            return repositoryFacade.getMedicoRepository().getReferenceById(dadosAgendamentoConsulta.idMedico());
         }
 
-        if (dados.especialidade() == null) {
+        if (dadosAgendamentoConsulta.especialidade() == null) {
             throw new ValidacaoException("Especialidade é obrigatória quando médico não for escolhido!");
         }
 
-        return medicoRepository.escolherMedicoAleatorioLivreNaData(dados.especialidade(), dados.data());
+        return repositoryFacade.getMedicoRepository().escolherMedicoAleatorioLivreNaData(dadosAgendamentoConsulta.especialidade(), dadosAgendamentoConsulta.data());
     }
 
 }
