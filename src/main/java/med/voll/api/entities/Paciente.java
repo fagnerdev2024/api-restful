@@ -1,14 +1,14 @@
 package med.voll.api.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import med.voll.api.dtos.DadosAtualizacaoPaciente;
 import med.voll.api.dtos.DadosCadastroPaciente;
 
+import java.util.function.Consumer;
+
 @Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,14 +41,18 @@ public class Paciente {
     }
 
     public void atualizarInformacoes(DadosAtualizacaoPaciente dados) {
-        if (dados.nome() != null)
-            this.nome = dados.nome();
+        atualizarCampo(dados.nome(), this::setNome);
+        atualizarCampo(dados.telefone(), this::setTelefone);
+        if(dados.endereco() != null){
+            this.endereco.atualizarInformacoes(dados.endereco());
+        }
+    }
 
-        if (dados.telefone() != null)
-            this.telefone = dados.telefone();
 
-        if (dados.endereco() != null)
-            endereco.atualizarInformacoes(dados.endereco());
+    private <T> void atualizarCampo(T valor, Consumer<T> setter){
+        if(valor != null){
+            setter.accept(valor);
+        }
     }
 
     public void excluir() {

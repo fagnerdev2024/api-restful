@@ -4,10 +4,14 @@ import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import med.voll.api.dtos.DadosEndereco;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.function.Consumer;
+
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @RestController
@@ -34,26 +38,19 @@ public class Endereco {
     }
 
     public void atualizarInformacoes(DadosEndereco dados) {
-        if (dados.logradouro() != null) {
-            this.logradouro = dados.logradouro();
-        }
-        if (dados.bairro() != null) {
-            this.bairro = dados.bairro();
-        }
-        if (dados.cep() != null) {
-            this.cep = dados.cep();
-        }
-        if (dados.uf() != null) {
-            this.uf = dados.uf();
-        }
-        if (dados.cidade() != null) {
-            this.cidade = dados.cidade();
-        }
-        if (dados.numero() != null) {
-            this.numero = dados.numero();
-        }
-        if (dados.complemento() != null) {
-            this.complemento = dados.complemento();
+        atualizarCampo(dados.logradouro(), this::setLogradouro);
+        atualizarCampo(dados.bairro(), this::setBairro);
+        atualizarCampo(dados.cep(), this::setCep);
+        atualizarCampo(dados.uf(), this::setUf);
+        atualizarCampo(dados.cidade(), this::setCidade);
+        atualizarCampo(dados.numero(), this::setNumero);
+        atualizarCampo(dados.complemento(), this::setComplemento);
+
+    }
+
+    private <T> void atualizarCampo(T valor, Consumer<T> setter){
+        if(valor != null){
+            setter.accept(valor);
         }
     }
 }
