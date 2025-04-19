@@ -21,18 +21,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PacienteService {
 
-    @Autowired
-    private PacienteRepository pacienteRepository;
-
     private static final Logger log = LoggerFactory.getLogger(PacienteService.class);
 
     private static final int MAX_PAGE_SIZE = 100;
 
+    private static final String ERRO_SALVAR_PACIENTE = "Erro ao salvar o paciente no banco de dados!";
+    private static final String PACIENTE_NAO_ENCONTRADO = "Paciente com ID %d não encontrado!";
+    private static final String PACIENTE_JA_INATIVO = "Paciente com ID %d já está inativo!";
+    private static final String ERRO_EXCLUIR_PACIENTE = "Erro ao excluir o paciente com ID %d no banco de dados!";
+    private static final String ERRO_ATUALIZAR_PACIENTE = "Erro ao atualizar o paciente no banco de dados!";
+    private static final String ERRO_LISTAR_PACIENTES = "Erro ao listar pacientes ativos.";
 
-
-
-
-
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Transactional
     public DadosDetalhamentoPaciente cadastrar(DadosCadastroPaciente dados) {
@@ -41,9 +42,9 @@ public class PacienteService {
         try {
             pacienteRepository.save(paciente);
             log.info("Paciente salvo com sucesso: {}", paciente.getId());
-        } catch (Exception e) {
-            log.error("Erro ao salvar o paciente no banco de dados!", e);
-            throw new DatabaseException("Erro ao salvar o paciente no banco de dados!", e);
+        } catch (DataAccessException e) {
+            log.error(ERRO_SALVAR_PACIENTE, e);
+            throw new DatabaseException(ERRO_SALVAR_PACIENTE, e);
         }
         return new DadosDetalhamentoPaciente(paciente);
     }
@@ -59,10 +60,10 @@ public class PacienteService {
                     .map(DadosListagemPaciente::new);
         } catch (DataAccessException e) {
             log.error("Erro de acesso ao banco de dados.", e);
-            throw new ServiceException("Falha ao acessar o banco de dados.", e);
+            throw new ServiceException(ERRO_LISTAR_PACIENTES, e);
         } catch (Exception e) {
             log.error("Erro desconhecido ao listar pacientes ativos.", e);
-            throw new ServiceException("Falha ao buscar pacientes ativos.", e);
+            throw new ServiceException(ERRO_LISTAR_PACIENTES, e);
         }
     }
 
@@ -72,7 +73,7 @@ public class PacienteService {
 
         var paciente = pacienteRepository.findById(dadosAtualizacaoPaciente.id())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Erro ao atualizar: Paciente com ID " + dadosAtualizacaoPaciente.id() + " não encontrado na base de dados."
+                        String.format(PACIENTE_NAO_ENCONTRADO, dadosAtualizacaoPaciente.id())
                 ));
 
         paciente.atualizarInformacoes(dadosAtualizacaoPaciente);
@@ -80,9 +81,9 @@ public class PacienteService {
         try {
             pacienteRepository.save(paciente);
             log.info("Paciente atualizado com sucesso: {}", paciente.getId());
-        } catch (Exception e) {
-            log.error("Erro ao atualizar o paciente no banco de dados!", e);
-            throw new DatabaseException("Erro ao atualizar o paciente no banco de dados!", e);
+        } catch (DataAccessException e) {
+            log.error(ERRO_ATUALIZAR_PACIENTE, e);
+            throw new DatabaseException(ERRO_ATUALIZAR_PACIENTE, e);
         }
 
         return new DadosDetalhamentoPaciente(paciente);
@@ -91,37 +92,40 @@ public class PacienteService {
     @Transactional
     public void excluir(Long id) {
         log.info("Iniciando exclusão para o paciente com ID: {}", id);
+
         var paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Paciente com ID " + id + " não encontrado!"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(PACIENTE_NAO_ENCONTRADO, id)
+                ));
+
         if (!paciente.isAtivo()) {
-            throw new IllegalStateException("Paciente com ID " + id + " já está inativo!");
+            throw new IllegalStateException(String.format(PACIENTE_JA_INATIVO, id));
         }
 
         try {
             paciente.excluir();
             pacienteRepository.save(paciente);
             log.info("Paciente com ID {} foi excluído logicamente.", id);
-        } catch (Exception e) {
-            log.error("Erro ao excluir o paciente com ID {} no banco de dados!", id, e);
-            throw new DatabaseException("Erro ao excluir o paciente no banco de dados!", e);
+        } catch (DataAccessException e) {
+            log.error(String.format(ERRO_EXCLUIR_PACIENTE, id), e);
+            throw new DatabaseException(String.format(ERRO_EXCLUIR_PACIENTE, id), e);
         }
     }
-
 
     @Transactional(readOnly = true)
     public DadosDetalhamentoPaciente detalhar(Long id) {
         log.info("Iniciando detalhamento para o paciente com ID: {}", id);
+
         var paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Paciente com ID " + id + " não encontrado!"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(PACIENTE_NAO_ENCONTRADO, id)
+                ));
+
         if (!paciente.isAtivo()) {
             log.info("Paciente com ID {} está inativo.", id);
             throw new IllegalStateException("Paciente com ID " + id + " está inativo!");
         }
-        try {
-            return new DadosDetalhamentoPaciente(paciente);
-        } catch (Exception e) {
-            log.error("Erro ao detalhar o paciente com ID {} no banco de dados!", id, e);
-            throw new ServiceException("Erro ao detalhar o paciente no banco de dados!", e);
-        }
+
+        return new DadosDetalhamentoPaciente(paciente);
     }
 }

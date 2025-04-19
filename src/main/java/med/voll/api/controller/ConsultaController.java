@@ -2,7 +2,7 @@ package med.voll.api.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import med.voll.api.services.AgendaDeConsultasService;
+import med.voll.api.services.ConsultasService;
 import med.voll.api.dtos.DadosAgendamentoConsulta;
 import med.voll.api.dtos.DadosCancelamentoConsulta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ConsultaController {
 
     @Autowired
-    private AgendaDeConsultasService agendaDeConsultasService;
+    private ConsultasService agendaDeConsultasService;
 
     @PostMapping
     @Transactional
