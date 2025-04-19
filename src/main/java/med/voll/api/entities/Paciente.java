@@ -7,13 +7,14 @@ import med.voll.api.dtos.DadosCadastroPaciente;
 
 import java.util.function.Consumer;
 
+
+@Entity(name = "Paciente")
+@Table(name = "pacientes")
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Paciente")
-@Table(name = "pacientes")
 public class Paciente {
 
     @Id
