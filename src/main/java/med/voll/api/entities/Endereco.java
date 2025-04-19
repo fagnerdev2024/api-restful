@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RestController
 @Embeddable
 public class Endereco {
 
