@@ -54,7 +54,6 @@ public class Medico {
         }
     }
 
-
     private <T> void atualizarCampo(T valor, Consumer<T> setter){
         if(valor != null){
             setter.accept(valor);
