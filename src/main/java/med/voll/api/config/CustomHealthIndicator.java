@@ -11,7 +11,7 @@ public class CustomHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
-        boolean isHealthy = checkCustomHealth();
+        boolean isHealthy = checkCustomHealthSaude();
         if(isHealthy){
             return Health.up().build();
         } else {
@@ -19,7 +19,7 @@ public class CustomHealthIndicator implements HealthIndicator {
         }
     }
 
-    private boolean checkCustomHealth(){
+    private boolean checkCustomHealthSaude(){
         return true;
     }
 }
