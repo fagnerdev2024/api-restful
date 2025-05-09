@@ -10,6 +10,8 @@ import med.voll.api.dtos.DadosDetalhamentoConsulta;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/consultas")
 @SecurityRequirement(name = "bearer-key")
@@ -33,5 +35,13 @@ public class ConsultaController {
     public ResponseEntity<Void> cancelar(@RequestBody @Valid DadosCancelamentoConsulta dadosCancelamentoConsulta) {
         consultasService.cancelar(dadosCancelamentoConsulta);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping
+    @Operation(summary = "Lista todas as consultas agendadas")
+    public ResponseEntity<List<DadosDetalhamentoConsulta>> listar() {
+        var consultas = consultasService.listarTodas();
+        return ResponseEntity.ok(consultas);
     }
 }

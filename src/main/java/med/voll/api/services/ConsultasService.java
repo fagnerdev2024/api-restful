@@ -31,6 +31,10 @@ public class ConsultasService {
     private final List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas;
     private final List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas;
 
+
+
+
+
     public ConsultasService(RepositoryFacade repositoryFacade, List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas, List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas) {
         this.repositoryFacade = repositoryFacade;
         this.validadorAgendamentoDeConsultas = validadorAgendamentoDeConsultas;
@@ -108,5 +112,13 @@ public class ConsultasService {
         }
 
         return medico;
+    }
+
+    public List<DadosDetalhamentoConsulta> listarTodas() {
+        return repositoryFacade.getConsultaRepository()
+                .findAll()
+                .stream()
+                .map(DadosDetalhamentoConsulta::new)
+                .toList();
     }
 }
