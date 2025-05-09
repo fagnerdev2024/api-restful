@@ -7,13 +7,14 @@ import med.voll.api.dtos.DadosCadastroPaciente;
 
 import java.util.function.Consumer;
 
+
+@Entity(name = "Paciente")
+@Table(name = "pacientes")
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Paciente")
-@Table(name = "pacientes")
 public class Paciente {
 
     @Id
@@ -50,7 +51,6 @@ public class Paciente {
             this.endereco.atualizarInformacoes(dados.endereco());
         }
     }
-
 
     private <T> void atualizarCampo(T valor, Consumer<T> setter){
         if(valor != null){

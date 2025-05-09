@@ -31,10 +31,11 @@ public class ConsultasService {
     private final List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas;
     private final List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas;
 
-    public ConsultasService(
-            RepositoryFacade repositoryFacade,
-            List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas,
-            List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas) {
+
+
+
+
+    public ConsultasService(RepositoryFacade repositoryFacade, List<ValidadorAgendamentoDeConsulta> validadorAgendamentoDeConsultas, List<ValidadorCancelamentoDeConsulta> validadorCancelamentoDeConsultas) {
         this.repositoryFacade = repositoryFacade;
         this.validadorAgendamentoDeConsultas = validadorAgendamentoDeConsultas;
         this.validadorCancelamentoDeConsultas = validadorCancelamentoDeConsultas;
@@ -49,8 +50,7 @@ public class ConsultasService {
             throw new ValidacaoException(PACIENTE_NAO_EXISTE);
         }
 
-        if (dadosAgendamentoConsulta.idMedico() != null &&
-                !repositoryFacade.getMedicoRepository().existsById(dadosAgendamentoConsulta.idMedico())) {
+        if (dadosAgendamentoConsulta.idMedico() != null && !repositoryFacade.getMedicoRepository().existsById(dadosAgendamentoConsulta.idMedico())) {
             log.error(MEDICO_NAO_EXISTE);
             throw new ValidacaoException(MEDICO_NAO_EXISTE);
         }
@@ -68,8 +68,7 @@ public class ConsultasService {
         var consulta = new Consulta(null, medico, paciente, dadosAgendamentoConsulta.data(), null);
         repositoryFacade.getConsultaRepository().save(consulta);
 
-        log.info("Consulta agendada com sucesso para o paciente com ID: {} e médico com ID: {}",
-                paciente.getId(), medico.getId());
+        log.info("Consulta agendada com sucesso para o paciente com ID: {} e médico com ID: {}", paciente.getId(), medico.getId());
 
         return new DadosDetalhamentoConsulta(consulta);
     }
@@ -88,8 +87,7 @@ public class ConsultasService {
         var consulta = repositoryFacade.getConsultaRepository().getReferenceById(dadosCancelamentoConsulta.idConsulta());
         consulta.cancelar(dadosCancelamentoConsulta.motivo());
 
-        log.info("Consulta com ID: {} foi cancelada. Motivo: {}",
-                dadosCancelamentoConsulta.idConsulta(), dadosCancelamentoConsulta.motivo());
+        log.info("Consulta com ID: {} foi cancelada. Motivo: {}", dadosCancelamentoConsulta.idConsulta(), dadosCancelamentoConsulta.motivo());
     }
 
     @Transactional
@@ -105,8 +103,7 @@ public class ConsultasService {
             throw new ValidacaoException(ESPECIALIDADE_OBRIGATORIA);
         }
 
-        var medico = repositoryFacade.getMedicoRepository()
-                .escolherMedicoAleatorioLivreNaData(dadosAgendamentoConsulta.especialidade(), dadosAgendamentoConsulta.data());
+        var medico = repositoryFacade.getMedicoRepository().escolherMedicoAleatorioLivreNaData(dadosAgendamentoConsulta.especialidade(), dadosAgendamentoConsulta.data());
 
         if (medico != null) {
             log.debug("Médico selecionado com ID: {}", medico.getId());
@@ -115,5 +112,13 @@ public class ConsultasService {
         }
 
         return medico;
+    }
+
+    public List<DadosDetalhamentoConsulta> listarTodas() {
+        return repositoryFacade.getConsultaRepository()
+                .findAll()
+                .stream()
+                .map(DadosDetalhamentoConsulta::new)
+                .toList();
     }
 }
