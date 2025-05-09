@@ -1,13 +1,13 @@
 package med.voll.api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import med.voll.api.services.ConsultasService;
 import med.voll.api.dtos.DadosAgendamentoConsulta;
 import med.voll.api.dtos.DadosCancelamentoConsulta;
-import org.springframework.beans.factory.annotation.Autowired;
+import med.voll.api.dtos.DadosDetalhamentoConsulta;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,21 +15,23 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "bearer-key")
 public class ConsultaController {
 
-    @Autowired
-    private ConsultasService agendaDeConsultasService;
+    private final ConsultasService consultasService;
+
+    public ConsultaController(ConsultasService consultasService) {
+        this.consultasService = consultasService;
+    }
 
     @PostMapping
-    @Transactional
-    public ResponseEntity agendar(@RequestBody @Valid DadosAgendamentoConsulta dadosAgendamentoConsulta) {
-        var dto = agendaDeConsultasService.agendar(dadosAgendamentoConsulta);
+    @Operation(summary = "Agenda uma nova consulta")
+    public ResponseEntity<DadosDetalhamentoConsulta> agendar(@RequestBody @Valid DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var dto = consultasService.agendar(dadosAgendamentoConsulta);
         return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping
-    @Transactional
-    public ResponseEntity cancelar(@RequestBody @Valid DadosCancelamentoConsulta dadosCancelamentoConsulta) {
-        agendaDeConsultasService.cancelar(dadosCancelamentoConsulta);
+    @Operation(summary = "Cancela uma consulta existente")
+    public ResponseEntity<Void> cancelar(@RequestBody @Valid DadosCancelamentoConsulta dadosCancelamentoConsulta) {
+        consultasService.cancelar(dadosCancelamentoConsulta);
         return ResponseEntity.noContent().build();
     }
-
 }
