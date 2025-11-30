@@ -36,6 +36,7 @@ public class AutenticacaoController {
 
             var authenticationToken = new UsernamePasswordAuthenticationToken(
                     dadosAutenticacao.login(),
+                    //testeeeeeee
                     dadosAutenticacao.senha()
             );
             var authentication = authenticationManager.authenticate(authenticationToken);
