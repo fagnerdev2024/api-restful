@@ -26,7 +26,6 @@ public class AutenticacaoController {
 
     public AutenticacaoController(AuthenticationManager authenticationManager, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
-        //teste8588888
         this.tokenService = tokenService;
     }
 
