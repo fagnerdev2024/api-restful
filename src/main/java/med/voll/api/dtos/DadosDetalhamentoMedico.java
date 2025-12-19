@@ -14,7 +14,7 @@ public record DadosDetalhamentoMedico(
         Especialidade especialidade,
         Endereco endereco) {
 
-    public DadosDetalhamentoMedico (Medico medico) {
+    public DadosDetalhamentoMedico(Medico medico) {
         this(medico.getId(),
             medico.getNome(),
             medico.getEmail(),
